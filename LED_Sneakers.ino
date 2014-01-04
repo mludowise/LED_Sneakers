@@ -20,10 +20,8 @@
 #define WAIT 25             // Time delay to wait for LEDs to light up
 
 // Constants used to calculate rainbow effect
-static const float RAINBOW_EFFECT_FREQUENCY = 2 * PI / NUM_LEDS;  // Use this frequency when displaying rainbow effect. The shoe will show one rainbow cycle around its circumfrence.
-static const float SINGLE_COLOR_FREQUENCY = 2 * PI / NUM_COLORS;  // Use this frequency to calculate color of the LEDs when cycling through the colors.
-static const float PI2_3 = 2 * PI / 3;
-static const float PI4_3 = 4 * PI / 3;
+#define PI2_3 2.09439510239    // = 2 * PI / 3;
+#define PI4_3 4.18879020479    // = 4 * PI / 3;
 
 class Button {
   private:
@@ -40,8 +38,8 @@ class Button {
         pinMode(input, INPUT_PULLUP);
       }
       
-    virtual void onDown() = 0;
-    virtual void onUp() = 0;
+    virtual void onDown() { };     // Triggered when button is pushed down
+    virtual void onUp() { };       // Triggered when button is released
     
   public:
     void checkButtonState() {
@@ -68,6 +66,10 @@ class ShoeAnimation {
     ShoeAnimation(const ShoeAnimation& copy); 
     ShoeAnimation& operator=(const ShoeAnimation& copy); 
     
+    const int mNumLEDs;
+    const int mFirstLED;
+    const float mRainbowFrequency; // Use this frequency when displaying rainbow effect. The shoe will show one rainbow cycle around its circumfrence.
+    
     Adafruit_NeoPixel mStrip;
     bool mIsAnimating; 
     bool mTurnLEDsOn;
@@ -77,8 +79,9 @@ class ShoeAnimation {
     uint32_t mColor;
     
   public: 
-    ShoeAnimation() : 
-      mStrip(NUM_LEDS, LED_OUTPUT, NEO_GRB + NEO_KHZ800), mIsAnimating(false), mTurnLEDsOn(true), mNextLEDIndex(0), mRainbowShift(0), mColor(0) {
+    ShoeAnimation(int output, int numLEDs, int firstLED) : 
+      mNumLEDs(numLEDs), mFirstLED(firstLED), mRainbowFrequency(2 * PI / numLEDs),
+      mStrip(numLEDs, output, NEO_GRB + NEO_KHZ800), mIsAnimating(false), mTurnLEDsOn(true), mNextLEDIndex(0), mRainbowShift(0), mColor(0) {
         mStrip.begin();
         mStrip.show(); // Initialize all pixels to 'off'
       }
@@ -89,7 +92,7 @@ class ShoeAnimation {
         mNextLEDIndex = 0;
         mStartedWaiting = 0;
         if (mColor == 0) { // Currently displaying rainbow
-          ++mRainbowShift %= NUM_LEDS;     // Shift the rainbow for the next step
+          ++mRainbowShift %= mNumLEDs;     // Shift the rainbow for the next step
         }
         incrementAnimation();
       }
@@ -106,7 +109,7 @@ class ShoeAnimation {
         uint32_t nextLEDColor = 0;
         if (mTurnLEDsOn) {
           if (mColor == 0) {
-            nextLEDColor = calculateColor(mNextLEDIndex + mRainbowShift, RAINBOW_EFFECT_FREQUENCY, 0);
+            nextLEDColor = calculateColor(mNextLEDIndex + mRainbowShift, mRainbowFrequency, 0);
           } else {
             nextLEDColor = mColor;
           }
@@ -120,11 +123,11 @@ class ShoeAnimation {
         Serial.println(mColor & 0x0000FF);
         #endif
   
-        mStrip.setPixelColor((mNextLEDIndex + FIRST_LED) % NUM_LEDS, nextLEDColor);
+        mStrip.setPixelColor((mNextLEDIndex + mFirstLED) % mNumLEDs, nextLEDColor);
         mStrip.show();
   
         mNextLEDIndex++; // Increment LED
-        if (mNextLEDIndex >= NUM_LEDS) {
+        if (mNextLEDIndex >= mNumLEDs) {
           if (mTurnLEDsOn) {
             mNextLEDIndex = 0;
             mTurnLEDsOn = false;
@@ -143,12 +146,10 @@ class ShoeAnimation {
       }
 };
 
-ShoeAnimation* animation = NULL;
-
 class ColorButton : public Button {
   private:
     const int mNumColors;
-    const float mFrequency;
+    const float mFrequency; // Use this frequency to calculate color of the LEDs when cycling through the colors.
     const float mColorOffset;
     int mCurrentColorIndex;
     ShoeAnimation* mAnimationPtr;
@@ -175,41 +176,32 @@ class ColorButton : public Button {
     }
 };
 
+ShoeAnimation* animation = NULL;
 ColorButton* colorButton = NULL;
+Button* stepButton = NULL;
 
 void setup() {
   // initialize serial communications at 9600 bps:
   Serial.begin(9600);
-  pinMode(STEP_INPUT, INPUT_PULLUP);
-  
-  animation = new ShoeAnimation();
+  animation = new ShoeAnimation(LED_OUTPUT, NUM_LEDS, FIRST_LED);
   colorButton = new ColorButton(COLOR_IN_PIN, COLOR_INPUT, 100, NUM_COLORS, COLOR_OFFSET, animation);
+  stepButton = new StepButton(STEP_IN_PIN, STEP_INPUT, STEP_SENSOR_TRIGGER);
 }
  
 void loop() {
-  // Check for color change
+  // Check for inputs
   colorButton->checkButtonState();
+  stepButton->checkButtonState();
     
   if (animation->isAnimating()) { // Are we in the process of an LED animation?
     animation->incrementAnimation();
-  } else if (checkIfStepping()) { // Take another step?
+  } else if (stepButton->isDown()) { // Is someone stepping?
     animation->startAnimation();
   }
 }
 
-boolean checkIfStepping() {
-  int stepSensorValue = analogRead(STEP_IN_PIN);
-
-  #if TEST == 1 // print the results to the serial monitor:
-  Serial.print("sensor = " );
-  Serial.print(stepSensorValue);
-  #endif
-  
-  return stepSensorValue < STEP_SENSOR_TRIGGER;
-}
-
 // Referenced from http://krazydad.com/tutorials/makecolors.php
-uint32_t calculateColor(int i, float frequency, float offset) {
+static uint32_t calculateColor(int i, float frequency, float offset) {
  return Adafruit_NeoPixel::Color(
       sin(frequency * (i + offset)) * 127 + 128,
       sin(frequency * (i + offset) + PI2_3) * 127 + 128,
