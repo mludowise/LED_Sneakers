@@ -2,8 +2,8 @@
 #include "Arduino.h"
 #include "Util.h"
 
-ShoeAnimation:: ShoeAnimation(int output, int numLEDs, int firstLEDIndex) : 
-  mNumLEDs(numLEDs), mFirstLEDIndex(firstLEDIndex), mRainbowFrequency(2 * PI / numLEDs),
+ShoeAnimation:: ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int delayMillis) : 
+  mNumLEDs(numLEDs), mFirstLEDIndex(firstLEDIndex), mRainbowFrequency(2 * PI / numLEDs), mDelay(delayMillis),
   mStrip(numLEDs, output, NEO_GRB + NEO_KHZ800), mIsAnimating(false), mTurnLEDsOn(true), mNextLEDIndex(0), mRainbowOffset(0), mColor(0) {
     mStrip.begin();
     mStrip.show(); // Initialize all pixels to 'off'
@@ -26,7 +26,7 @@ void ShoeAnimation:: increment() {
   }
   
   unsigned long now = millis();
-  if (mStartedWaiting + WAIT <= now) { // If we've been waiting long enough for the next step in the animation
+  if (mStartedWaiting + mDelay <= now) { // If we've been waiting long enough for the next step in the animation
     changeNextLED();
     mStartedWaiting = now;
   }

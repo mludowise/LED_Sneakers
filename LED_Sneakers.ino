@@ -1,6 +1,8 @@
 #include "Button.h"
 #include "ShoeAnimation.h"
 #include "Util.h"
+#include <Adafruit_NeoPixel.h>
+
 
 #define TEST 2            // If we should print test statements (1 = explicit, 2 = info)
 
@@ -20,10 +22,6 @@
 
 // Some constants used for display
 #define WAIT 25             // Time delay to wait for LEDs to light up
-
-// Constants used to calculate rainbow effect
-#define PI2_3 2.09439510239    // = 2 * PI / 3;
-#define PI4_3 4.18879020479    // = 4 * PI / 3;
 
 class ColorButton : public Button {
   private:
@@ -62,7 +60,7 @@ Button* stepButton = NULL;
 void setup() {
   // initialize serial communications at 9600 bps:
   Serial.begin(9600);
-  animation = new ShoeAnimation(LED_OUTPUT, NUM_LEDS, FIRST_LED);
+  animation = new ShoeAnimation(LED_OUTPUT, NUM_LEDS, FIRST_LED, WAIT);
   colorButton = new ColorButton(COLOR_IN_PIN, COLOR_INPUT, 100, NUM_COLORS, COLOR_OFFSET, animation);
   stepButton = new Button(STEP_IN_PIN, STEP_INPUT, STEP_SENSOR_TRIGGER);
 }

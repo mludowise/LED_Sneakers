@@ -12,6 +12,7 @@ class ShoeAnimation {
     const int mNumLEDs;            // The number of LEDs on the shoe
     const int mFirstLEDIndex;      // The index of the first LED on the shoe to start the cycle with
     const float mRainbowFrequency; // Use this frequency when displaying rainbow effect. The shoe will show one rainbow cycle around its circumfrence.
+    const int mDelay;              // The amount of time, in milliseconds, to delay between pixel animations
     
     Adafruit_NeoPixel mStrip;      // The NeoPixel LED strip
     bool mIsAnimating;             // Is the shoe in the process of a swipe animation?
@@ -26,7 +27,7 @@ class ShoeAnimation {
 
   public:
     // Constructor: output pin, number of LEDs, index of the first LED
-    ShoeAnimation(int output, int numLEDs, int firstLEDIndex);
+    ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int delayMillis);
     
     // Starts a new animation
     void start();
