@@ -1,9 +1,10 @@
 #include "Button.h"
 #include "ShoeAnimation.h"
 #include "ColorButton.h"
+#include "StepButton.h"
 #include <Adafruit_NeoPixel.h>
 
-#define PRINT_SENSOR_VALUE false    // Print the step sensor value to the console
+#define PRINT_SENSOR_VALUE true    // Print the step sensor value to the console
 
 // Define all our inputs and outputs
 #define STEP_IN_PIN A9              // Analog input pin that the step potentiometer is attached to
@@ -13,25 +14,26 @@
 #define LED_OUTPUT 6                // Output pin that the Neo Pixel LEDs are attached to
 
 // Set these based on individual shoe and potentiometer sensitivies
-#define STEP_SENSOR_TRIGGER 35      // The LEDs will be triggered when the step input goes below this value
+#define STEP_SENSOR_TRIGGER 50      // The LEDs will be triggered when the step input goes below this value
 #define NUM_LEDS 25                 // The number of LEDs on the shoe
 #define FIRST_LED 0                 // The index of the first LED on the shoe to start the cycle with
 
 // Some constants used for display
+#define TRIGGER_ONCE_PER_STEP true  // Trigger the LED animation once per step or whenever there is pressure on the heal
 #define NUM_COLORS 8                // The number of colors to cycle through with button clicks
 #define COLOR_OFFSET 0.8f           // Value between 0 and 1, used to tweak the exact colors that are cycled through
 #define ANIMATION_DELAY 25          // Time delay to wait for LEDs to light up
 
 ShoeAnimation* animation = NULL;
 ColorButton* colorButton = NULL;
-Button* stepButton = NULL;
+StepButton* stepButton = NULL;
 
 void setup() {
   // initialize serial communications at 9600 bps:
   Serial.begin(9600);
   animation = new ShoeAnimation(LED_OUTPUT, NUM_LEDS, FIRST_LED, ANIMATION_DELAY);
   colorButton = new ColorButton(COLOR_IN_PIN, COLOR_INPUT, 100, NUM_COLORS, COLOR_OFFSET, animation);
-  stepButton = new Button(STEP_IN_PIN, STEP_INPUT, STEP_SENSOR_TRIGGER);
+  stepButton = new StepButton(STEP_IN_PIN, STEP_INPUT, STEP_SENSOR_TRIGGER, TRIGGER_ONCE_PER_STEP, animation);
   stepButton->printSensorValue(PRINT_SENSOR_VALUE);
 }
  
@@ -42,7 +44,7 @@ void loop() {
     
   if (animation->isAnimating()) {    // Are we in the process of an LED animation?
     animation->increment();          // Try to increment the animation
-  } else if (stepButton->isDown()) { // Is someone stepping?
+  } else if (!TRIGGER_ONCE_PER_STEP && stepButton->isDown()) { // Is someone stepping?
     animation->start();              // Start animation
   }
 }
