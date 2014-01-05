@@ -16,6 +16,6 @@ void ColorButton::onUp() {
 void ColorButton::updateAnimationColor() {
   bool isRainbow = mCurrentColorIndex == NUM_COLORS;
   if (mAnimationPtr) {
-    mAnimationPtr->setColor(isRainbow ? 0 : Util::calculateColor(mCurrentColorIndex, COLOR_FREQUENCY, COLOR_OFFSET));
+    mAnimationPtr->setColor(isRainbow ? 0 : calculateColor(mCurrentColorIndex, COLOR_FREQUENCY, COLOR_OFFSET));
   }
 }

@@ -22,14 +22,12 @@ class ShoeAnimation {
     int mRainbowOffset;                  // The color of the rainbow is offset by one LED with each step
     uint32_t mColor;                     // Color the LEDs will display, 0 indicates rainbow mode
     
-    // Turn the next LED in the sequence on or off
-    void changeNextLED();
+    // Sets the LED with the specified index to the specified color, offsetting it by FIRST_LED_INDEX (color=0 sets the LED off)
+    void setPixelColor(int index, uint32_t color);
     
-    // Turn on LED with the specified index
-    void turnOnLED(int index);
-    
-    // Turn off LED with the specified index
-    void turnOffLED(int index);
+    // Returns the color for the LED with the specified index. 
+    // Returns a different color for each index if in rainbow mode, otherwise returns mColor;
+    uint32_t getLEDColor(int index);
 
   public:
     // Constructor: output pin, number of LEDs, index of the first LED

@@ -3,13 +3,22 @@
 #include "Util.h"
 
 ShoeAnimation:: ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int delayMillis) : 
-  NUM_LEDS(numLEDs), FIRST_LED_INDEX(firstLEDIndex), RAINBOW_COLOR_FREQUENCY(2 * PI / numLEDs), DELAY(delayMillis),
-  mStrip(numLEDs, output, NEO_GRB + NEO_KHZ800), mIsAnimating(false), mTurnLEDsOn(true), mNextLEDIndex(0), mRainbowOffset(0), mColor(0) {
+  NUM_LEDS(numLEDs), 
+  FIRST_LED_INDEX(firstLEDIndex), 
+  RAINBOW_COLOR_FREQUENCY(2 * PI / numLEDs), 
+  DELAY(delayMillis),
+  mStrip(numLEDs, output, NEO_GRB + NEO_KHZ800), 
+  mIsAnimating(false), 
+  mTurnLEDsOn(true), 
+  mNextLEDIndex(0), 
+  mRainbowOffset(0), 
+  mColor(0) {
     mStrip.begin();
     mStrip.show(); // Initialize all pixels to 'off'
 }
       
 void ShoeAnimation:: start() {
+  Serial.println("Start");
   mIsAnimating = true;
   mTurnLEDsOn = true;
   mNextLEDIndex = 0;
@@ -27,47 +36,21 @@ void ShoeAnimation:: increment() {
   
   unsigned long now = millis();
   if (mStartedWaiting + DELAY <= now) { // If we've been waiting long enough for the next step in the animation
-    changeNextLED();
+    uint32_t c = mTurnLEDsOn ? getLEDColor(mNextLEDIndex) : 0;
+    
+    setPixelColor(mNextLEDIndex, c);
+    mStrip.show();
+    
+    if (++mNextLEDIndex >= NUM_LEDS) {
+      if (mTurnLEDsOn) {
+        mNextLEDIndex = 0;
+        mTurnLEDsOn = false;
+      } else {
+        mIsAnimating = false;
+      }
+    }
     mStartedWaiting = now;
   }
-}
-
-void ShoeAnimation:: changeNextLED() {
-  if (mTurnLEDsOn) {
-    turnOnLED(mNextLEDIndex);
-  } else {
-    turnOffLED(mNextLEDIndex);
-  }
-  
-  mNextLEDIndex++; // Increment LED
-  if (mNextLEDIndex >= NUM_LEDS) {
-    if (mTurnLEDsOn) {
-      mNextLEDIndex = 0;
-      mTurnLEDsOn = false;
-    } else {
-      mIsAnimating = false;
-    }
-  }
-}
-
-void ShoeAnimation:: turnOnLED(int index) {
-  uint32_t nextLEDColor = 0;
-  if (mColor == 0) {
-    nextLEDColor = Util::calculateColor(mNextLEDIndex + mRainbowOffset, RAINBOW_COLOR_FREQUENCY, 0);
-  } else {
-    nextLEDColor = mColor;
-  }
-  mStrip.setPixelColor((index + FIRST_LED_INDEX) % NUM_LEDS, nextLEDColor);
-  mStrip.show();
-}
-
-void ShoeAnimation:: turnOffLED(int index) {
-  mStrip.setPixelColor((index + FIRST_LED_INDEX) % NUM_LEDS, 0);
-  mStrip.show();
-}
-
-bool ShoeAnimation:: isAnimating() const {
-  return mIsAnimating;
 }
 
 void ShoeAnimation:: setColor(uint32_t c) {
@@ -79,16 +62,23 @@ void ShoeAnimation:: setColor(uint32_t c) {
     return;
   }
   
-  int startIndex, endIndex;
-  if (mTurnLEDsOn) { // We're in the process of turning LEDs on
-    startIndex = 0;
-    endIndex = mNextLEDIndex;
-  } else { // We're in the process of turning LEDs off
-    startIndex = mNextLEDIndex;
-    endIndex = NUM_LEDS;
-  }
+  int startIndex=  mTurnLEDsOn ? 0 : mNextLEDIndex; 
+  int endIndex = mTurnLEDsOn ? mNextLEDIndex : NUM_LEDS;  
   
   for (int i = startIndex; i < endIndex; i++) {
-    turnOnLED(i);
+    setPixelColor(i, getLEDColor(i));
   }
+  mStrip.show();
+}
+
+void ShoeAnimation:: setPixelColor(int index, uint32_t color) {
+  mStrip.setPixelColor((index + FIRST_LED_INDEX) % NUM_LEDS, color);
+}
+
+uint32_t ShoeAnimation:: getLEDColor(int index) {
+  return mColor == 0 ? calculateColor(mNextLEDIndex + mRainbowOffset, RAINBOW_COLOR_FREQUENCY, 0) : mColor;
+}
+
+bool ShoeAnimation:: isAnimating() const {
+  return mIsAnimating;
 }

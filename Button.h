@@ -9,6 +9,7 @@ class Button {
     const int PIN;        // Analog input pin that the button or potentiometer is attached to
     const int THRESHOLD;  // The button will be triggered when input goes below this value
     bool mIsDown;         // If the button is currently being pressed down
+    bool mPrint;          // Print debug output
       
   public:
     // Constructor: pin number, input number, threshold the value of the input must dip below to trigger a button push
@@ -19,6 +20,9 @@ class Button {
     
     // Returns if the button is currently pushed down
     bool isDown() const;
+    
+    // Whether to print the sensor value
+    void printSensorValue(bool b);
     
   protected:    
     // Triggered when button is pushed down

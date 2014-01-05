@@ -3,22 +3,24 @@
 #include "ColorButton.h"
 #include <Adafruit_NeoPixel.h>
 
+#define PRINT_SENSOR_VALUE false    // Print the step sensor value to the console
+
 // Define all our inputs and outputs
-#define STEP_IN_PIN A9          // Analog input pin that the step potentiometer is attached to
-#define STEP_INPUT 9            // Analog input pin that the step potentiometer is attached to
-#define COLOR_IN_PIN A10        // Analog input pin that the color potentiometer is attached to
-#define COLOR_INPUT 10          // Analog input pin that the color potentiometer is attached to
-#define LED_OUTPUT 6            // Output pin that the Neo Pixel LEDs are attached to
+#define STEP_IN_PIN A9              // Analog input pin that the step potentiometer is attached to
+#define STEP_INPUT 9                // Analog input pin that the step potentiometer is attached to
+#define COLOR_IN_PIN A10            // Analog input pin that the color potentiometer is attached to
+#define COLOR_INPUT 10              // Analog input pin that the color potentiometer is attached to
+#define LED_OUTPUT 6                // Output pin that the Neo Pixel LEDs are attached to
 
 // Set these based on individual shoe and potentiometer sensitivies
-#define STEP_SENSOR_TRIGGER 30  // The LEDs will be triggered when the step input goes below this value
-#define NUM_LEDS 25             // The number of LEDs on the shoe
-#define FIRST_LED 0             // The index of the first LED on the shoe to start the cycle with
+#define STEP_SENSOR_TRIGGER 35      // The LEDs will be triggered when the step input goes below this value
+#define NUM_LEDS 25                 // The number of LEDs on the shoe
+#define FIRST_LED 0                 // The index of the first LED on the shoe to start the cycle with
 
 // Some constants used for display
-#define NUM_COLORS 8            // The number of colors to cycle through with button clicks
-#define COLOR_OFFSET 0.8f       // Value between 0 and 1, used to tweak the exact colors that are cycled through
-#define ANIMATION_DELAY 25      // Time delay to wait for LEDs to light up
+#define NUM_COLORS 8                // The number of colors to cycle through with button clicks
+#define COLOR_OFFSET 0.8f           // Value between 0 and 1, used to tweak the exact colors that are cycled through
+#define ANIMATION_DELAY 25          // Time delay to wait for LEDs to light up
 
 ShoeAnimation* animation = NULL;
 ColorButton* colorButton = NULL;
@@ -30,6 +32,7 @@ void setup() {
   animation = new ShoeAnimation(LED_OUTPUT, NUM_LEDS, FIRST_LED, ANIMATION_DELAY);
   colorButton = new ColorButton(COLOR_IN_PIN, COLOR_INPUT, 100, NUM_COLORS, COLOR_OFFSET, animation);
   stepButton = new Button(STEP_IN_PIN, STEP_INPUT, STEP_SENSOR_TRIGGER);
+  stepButton->printSensorValue(PRINT_SENSOR_VALUE);
 }
  
 void loop() {
