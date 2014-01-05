@@ -42,14 +42,6 @@ void ShoeAnimation:: changeNextLED() {
     }
   }
   
-  #if TEST == 1
-  Serial.print((mColor & 0xFF0000) >> 16);
-  Serial.print("\t");
-  Serial.print((mColor & 0x00FF00) >> 8);
-  Serial.print("\t");
-  Serial.println(mColor & 0x0000FF);
-  #endif
-  
   mStrip.setPixelColor((mNextLEDIndex + mFirstLEDIndex) % mNumLEDs, nextLEDColor);
   mStrip.show();
   
