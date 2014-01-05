@@ -24,6 +24,12 @@ class ShoeAnimation {
     
     // Turn the next LED in the sequence on or off
     void changeNextLED();
+    
+    // Turn on LED with the specified index
+    void turnOnLED(int index);
+    
+    // Turn off LED with the specified index
+    void turnOffLED(int index);
 
   public:
     // Constructor: output pin, number of LEDs, index of the first LED

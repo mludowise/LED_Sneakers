@@ -33,17 +33,11 @@ void ShoeAnimation:: increment() {
 }
 
 void ShoeAnimation:: changeNextLED() {
-  uint32_t nextLEDColor = 0;
   if (mTurnLEDsOn) {
-    if (mColor == 0) {
-      nextLEDColor = Util::calculateColor(mNextLEDIndex + mRainbowOffset, RAINBOW_COLOR_FREQUENCY, 0);
-    } else {
-      nextLEDColor = mColor;
-    }
+    turnOnLED(mNextLEDIndex);
+  } else {
+    turnOffLED(mNextLEDIndex);
   }
-  
-  mStrip.setPixelColor((mNextLEDIndex + FIRST_LED_INDEX) % NUM_LEDS, nextLEDColor);
-  mStrip.show();
   
   mNextLEDIndex++; // Increment LED
   if (mNextLEDIndex >= NUM_LEDS) {
@@ -56,10 +50,45 @@ void ShoeAnimation:: changeNextLED() {
   }
 }
 
+void ShoeAnimation:: turnOnLED(int index) {
+  uint32_t nextLEDColor = 0;
+  if (mColor == 0) {
+    nextLEDColor = Util::calculateColor(mNextLEDIndex + mRainbowOffset, RAINBOW_COLOR_FREQUENCY, 0);
+  } else {
+    nextLEDColor = mColor;
+  }
+  mStrip.setPixelColor((index + FIRST_LED_INDEX) % NUM_LEDS, nextLEDColor);
+  mStrip.show();
+}
+
+void ShoeAnimation:: turnOffLED(int index) {
+  mStrip.setPixelColor((index + FIRST_LED_INDEX) % NUM_LEDS, 0);
+  mStrip.show();
+}
+
 bool ShoeAnimation:: isAnimating() const {
   return mIsAnimating;
 }
 
 void ShoeAnimation:: setColor(uint32_t c) {
   mColor = c;
+  
+  // Update all of the LEDs that are currently turned on to the appropriate color
+  
+  if (!mIsAnimating) { // Nothing to do here
+    return;
+  }
+  
+  int startIndex, endIndex;
+  if (mTurnLEDsOn) { // We're in the process of turning LEDs on
+    startIndex = 0;
+    endIndex = mNextLEDIndex;
+  } else { // We're in the process of turning LEDs off
+    startIndex = mNextLEDIndex;
+    endIndex = NUM_LEDS;
+  }
+  
+  for (int i = startIndex; i < endIndex; i++) {
+    turnOnLED(i);
+  }
 }
