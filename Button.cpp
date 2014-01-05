@@ -14,26 +14,18 @@ void Button:: checkButtonState() {
   
   if (mPrint) {
     Serial.print("Sensor value = ");
-    Serial.print(sensorValue);
+    Serial.println(sensorValue);
   }
   
   if (sensorValue < THRESHOLD) { // Pressed
     bool wasDown = mIsDown;
     mIsDown = true;
     if (!wasDown) {
-      if (mPrint) {
-        Serial.println ("\tDOWN");
-      }
       onDown();
     }
   } else if (mIsDown) { // Released
     mIsDown = false;
-    if (mPrint) {
-      Serial.println ("\tUP");
-    }
     onUp();
-  } else if (mPrint) {
-    Serial.println();
   }
 }
     
