@@ -6,9 +6,9 @@ class Button {
     Button(const Button& copy); 
     Button& operator=(const Button& copy); 
 
-    const int mPin;
-    const int mThreshold;
-    bool mIsDown;
+    const int PIN;        // Analog input pin that the button or potentiometer is attached to
+    const int THRESHOLD;  // The button will be triggered when input goes below this value
+    bool mIsDown;         // If the button is currently being pressed down
       
   public:
     // Constructor: pin number, input number, threshold the value of the input must dip below to trigger a button push

@@ -2,13 +2,13 @@
 #include "Button.h"
 
 Button:: Button(int pin, int input, int threshold) :
-  mPin(pin), mThreshold(threshold), mIsDown(false) {
+  PIN(pin), THRESHOLD(threshold), mIsDown(false) {
     pinMode(input, INPUT_PULLUP);
 }
     
 void Button:: checkButtonState() {
-  int sensorValue = analogRead(mPin);
-  if (sensorValue < mThreshold) { // Pressed
+  int sensorValue = analogRead(PIN);
+  if (sensorValue < THRESHOLD) { // Pressed
     bool wasDown = mIsDown;
     mIsDown = true;
     if (!wasDown) {

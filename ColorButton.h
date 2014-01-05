@@ -6,9 +6,9 @@
 
 class ColorButton : public Button {
   private:
-    const int mNumColors;          // The number of colors to cycle through (not including rainbow mode)
-    const float mFrequency;        // Use this frequency to calculate color of the LEDs when cycling through the colors.
-    const float mColorOffset;      // Value between 0 and 1, used to tweak the exact colors that are cycled through
+    const int NUM_COLORS;          // The number of colors to cycle through (not including rainbow mode)
+    const float COLOR_FREQUENCY;   // Use this frequency to calculate color of the LEDs when cycling through the colors.
+    const float COLOR_OFFSET;      // Value between 0 and 1, used to tweak the exact colors that are cycled through
     int mCurrentColorIndex;        // Denotes the index of the color currently being used
     ShoeAnimation* mAnimationPtr;  // Pointer to ShoeAnimation whose color we're changing
     

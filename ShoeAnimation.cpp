@@ -3,7 +3,7 @@
 #include "Util.h"
 
 ShoeAnimation:: ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int delayMillis) : 
-  mNumLEDs(numLEDs), mFirstLEDIndex(firstLEDIndex), mRainbowFrequency(2 * PI / numLEDs), mDelay(delayMillis),
+  NUM_LEDS(numLEDs), FIRST_LED_INDEX(firstLEDIndex), RAINBOW_COLOR_FREQUENCY(2 * PI / numLEDs), DELAY(delayMillis),
   mStrip(numLEDs, output, NEO_GRB + NEO_KHZ800), mIsAnimating(false), mTurnLEDsOn(true), mNextLEDIndex(0), mRainbowOffset(0), mColor(0) {
     mStrip.begin();
     mStrip.show(); // Initialize all pixels to 'off'
@@ -15,7 +15,7 @@ void ShoeAnimation:: start() {
   mNextLEDIndex = 0;
   mStartedWaiting = 0;
   if (mColor == 0) { // Currently displaying rainbow
-    ++mRainbowOffset %= mNumLEDs;     // Shift the rainbow for the next step
+    ++mRainbowOffset %= NUM_LEDS;     // Shift the rainbow for the next step
   }
   increment();
 }
@@ -26,7 +26,7 @@ void ShoeAnimation:: increment() {
   }
   
   unsigned long now = millis();
-  if (mStartedWaiting + mDelay <= now) { // If we've been waiting long enough for the next step in the animation
+  if (mStartedWaiting + DELAY <= now) { // If we've been waiting long enough for the next step in the animation
     changeNextLED();
     mStartedWaiting = now;
   }
@@ -36,17 +36,17 @@ void ShoeAnimation:: changeNextLED() {
   uint32_t nextLEDColor = 0;
   if (mTurnLEDsOn) {
     if (mColor == 0) {
-      nextLEDColor = Util::calculateColor(mNextLEDIndex + mRainbowOffset, mRainbowFrequency, 0);
+      nextLEDColor = Util::calculateColor(mNextLEDIndex + mRainbowOffset, RAINBOW_COLOR_FREQUENCY, 0);
     } else {
       nextLEDColor = mColor;
     }
   }
   
-  mStrip.setPixelColor((mNextLEDIndex + mFirstLEDIndex) % mNumLEDs, nextLEDColor);
+  mStrip.setPixelColor((mNextLEDIndex + FIRST_LED_INDEX) % NUM_LEDS, nextLEDColor);
   mStrip.show();
   
   mNextLEDIndex++; // Increment LED
-  if (mNextLEDIndex >= mNumLEDs) {
+  if (mNextLEDIndex >= NUM_LEDS) {
     if (mTurnLEDsOn) {
       mNextLEDIndex = 0;
       mTurnLEDsOn = false;

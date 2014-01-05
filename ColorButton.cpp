@@ -4,18 +4,18 @@
 #include "Util.h"
 
 ColorButton:: ColorButton(int pin, int input, int threshold, int numColors, float colorOffset, ShoeAnimation* animationPtr) : 
-  Button (pin, input, threshold), mNumColors(numColors), mColorOffset(colorOffset), mFrequency(2 * PI / numColors), mCurrentColorIndex(0), mAnimationPtr(animationPtr) {
+  Button (pin, input, threshold), NUM_COLORS(numColors), COLOR_OFFSET(colorOffset), COLOR_FREQUENCY(2 * PI / numColors), mCurrentColorIndex(0), mAnimationPtr(animationPtr) {
     updateAnimationColor();
 }
 
 void ColorButton::onUp() {
-  ++mCurrentColorIndex %= (mNumColors + 1);
+  ++mCurrentColorIndex %= (NUM_COLORS + 1);
   updateAnimationColor();
 }
 
 void ColorButton::updateAnimationColor() {
-  bool isRainbow = mCurrentColorIndex == mNumColors;
+  bool isRainbow = mCurrentColorIndex == NUM_COLORS;
   if (mAnimationPtr) {
-    mAnimationPtr->setColor(isRainbow ? 0 : Util::calculateColor(mCurrentColorIndex, mFrequency, mColorOffset));
+    mAnimationPtr->setColor(isRainbow ? 0 : Util::calculateColor(mCurrentColorIndex, COLOR_FREQUENCY, COLOR_OFFSET));
   }
 }
