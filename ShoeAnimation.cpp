@@ -76,7 +76,7 @@ void ShoeAnimation:: setPixelColor(int index, uint32_t color) {
 }
 
 uint32_t ShoeAnimation:: getLEDColor(int index) {
-  return mColor == 0 ? calculateColor(mNextLEDIndex + mRainbowOffset, RAINBOW_COLOR_FREQUENCY, 0) : mColor;
+  return mColor == 0 ? calculateColor(index + mRainbowOffset, RAINBOW_COLOR_FREQUENCY, 0) : mColor;
 }
 
 bool ShoeAnimation:: isAnimating() const {
