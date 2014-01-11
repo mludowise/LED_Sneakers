@@ -18,7 +18,6 @@ ShoeAnimation:: ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int de
 }
       
 void ShoeAnimation:: start() {
-  Serial.println("Start");
   mIsAnimating = true;
   mTurnLEDsOn = true;
   mNextLEDIndex = 0;

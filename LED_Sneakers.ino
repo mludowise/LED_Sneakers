@@ -2,6 +2,7 @@
 #include "ShoeAnimation.h"
 #include "ColorButton.h"
 #include <Adafruit_NeoPixel.h>
+#include <EEPROM.h>
 
 #define PRINT_SENSOR_VALUE false    // Print the step sensor value to the console
 
@@ -30,7 +31,7 @@ void setup() {
   // initialize serial communications at 9600 bps:
   Serial.begin(9600);
   animation = new ShoeAnimation(LED_OUTPUT, NUM_LEDS, FIRST_LED, ANIMATION_DELAY);
-  colorButton = new ColorButton(COLOR_IN_PIN, COLOR_INPUT, 100, NUM_COLORS, COLOR_OFFSET, animation);
+  colorButton = new ColorButton(COLOR_IN_PIN, COLOR_INPUT, 100, NUM_COLORS, COLOR_OFFSET, animation, 0);
   stepButton = new Button(STEP_IN_PIN, STEP_INPUT, STEP_SENSOR_TRIGGER);
   stepButton->printSensorValue(PRINT_SENSOR_VALUE);
 }
