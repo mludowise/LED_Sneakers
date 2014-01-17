@@ -21,6 +21,7 @@ class ShoeAnimation {
     unsigned long mStartedWaiting;       // Time we started waiting for the next step of animation
     int mRainbowOffset;                  // The color of the rainbow is offset by one LED with each step
     uint32_t mColor;                     // Color the LEDs will display, 0 indicates rainbow mode
+    bool mReverseAnimation;              // If true, the direction of the animation goes backwards (mNextLEDIndex will be decremented rather than incremented)
     
     // Sets the LED with the specified index to the specified color, offsetting it by FIRST_LED_INDEX (color=0 sets the LED off)
     void setPixelColor(int index, uint32_t color);
@@ -30,8 +31,9 @@ class ShoeAnimation {
     uint32_t getLEDColor(int index);
 
   public:
-    // Constructor: output pin, number of LEDs, index of the first LED
-    ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int delayMillis);
+    
+    // Constructor: output pin, number of LEDs, index of the first LED, time delay in milliseconds, direction of the animation
+    ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int delayMillis, bool reverseAnimation);
     
     // Starts a new animation
     void start();

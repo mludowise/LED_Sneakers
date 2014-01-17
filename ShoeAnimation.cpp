@@ -2,7 +2,7 @@
 #include "Arduino.h"
 #include "Util.h"
 
-ShoeAnimation:: ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int delayMillis) : 
+ShoeAnimation:: ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int delayMillis, bool reverseAnimation) : 
   NUM_LEDS(numLEDs), 
   FIRST_LED_INDEX(firstLEDIndex), 
   RAINBOW_COLOR_FREQUENCY(2 * PI / numLEDs), 
@@ -12,7 +12,8 @@ ShoeAnimation:: ShoeAnimation(int output, int numLEDs, int firstLEDIndex, int de
   mTurnLEDsOn(true), 
   mNextLEDIndex(0), 
   mRainbowOffset(0), 
-  mColor(0) {
+  mColor(0),
+  mReverseAnimation(reverseAnimation) {
     mStrip.begin();
     mStrip.show(); // Initialize all pixels to 'off'
 }
@@ -71,7 +72,7 @@ void ShoeAnimation:: setColor(uint32_t c) {
 }
 
 void ShoeAnimation:: setPixelColor(int index, uint32_t color) {
-  mStrip.setPixelColor((index + FIRST_LED_INDEX) % NUM_LEDS, color);
+  mStrip.setPixelColor((index * (mReverseAnimation ? -1 : 1) + FIRST_LED_INDEX + NUM_LEDS) % NUM_LEDS, color);
 }
 
 uint32_t ShoeAnimation:: getLEDColor(int index) {
