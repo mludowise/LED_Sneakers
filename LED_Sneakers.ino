@@ -14,7 +14,9 @@
 #define LED_OUTPUT 6                // Output pin that the Neo Pixel LEDs are attached to
 
 // Set these based on individual shoe and potentiometer sensitivies
-#define STEP_SENSOR_TRIGGER 30      // The LEDs will be triggered when the step input goes below this value
+// Right = 44 - 100 (75)
+// Left = 50 - 115
+#define STEP_SENSOR_TRIGGER 75      // The LEDs will be triggered when the step input goes below this value
 #define NUM_LEDS 38                 // The number of LEDs on the shoe
 #define FIRST_LED 34                // The index of the first LED on the shoe to start the cycle with
 #define REVERSE_ANIMATION true      // If the LED animation should animate from outside-in
